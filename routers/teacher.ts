@@ -36,12 +36,13 @@ router.get("/:teacherId", async (req, res) => {
  */
 router.post("/",
   async (req, res) => {
+    let value
     try {
-      const value = await createTeacherSchema.parseAsync(req.body)
+      value = await createTeacherSchema.parseAsync(req.body)
     } catch (e) {
       return res.status(400).json(e)
     }
-    await teacherConroller.signup(req.body)
+    await teacherConroller.signup(value)
       .then(createdTeacher => res.status(201).json(createdTeacher))
   })
 

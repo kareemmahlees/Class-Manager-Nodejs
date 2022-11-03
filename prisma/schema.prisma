@@ -27,8 +27,8 @@ model Student {
   name      String   @unique
   email     String   @unique
   password  String   @unique
-  class     Class    @relation(fields: [classId], references: [id])
-  classId   Int
+  class     Class?   @relation(fields: [classId], references: [id])
+  classId   Int?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
