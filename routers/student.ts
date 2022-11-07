@@ -1,10 +1,10 @@
 import express from "express";
-import { Prisma } from "@prisma/client"
 import { prisma } from "../database";
 import { createStudentValidation, updateStudentValidation } from "../validators/student.validate"
 import { StudentController } from "../controllers/student.controller"
+import { authMiddleware } from "../helpers/jwt-config"
 
-const studentController = new StudentController(prisma.student)
+const studentController = new StudentController(prisma.user)
 
 export const router = express.Router()
 router.use(express.json())
@@ -13,18 +13,14 @@ router.use(express.json())
  * return one user
  */
 router.get("/:studentId", async (req, res) => {
-    await studentController.getOneStudent(req.params.studentId)
-        .then(returnedStudennt => res.json(returnedStudennt))
-        .catch(e => {
-            if (e instanceof Prisma.NotFoundError) {
-                return res.status(404).json({ error: e.message })
-            }
-        })
+    const { statusCode, content } = await studentController.getOneStudent(req.params.studentId)
+    return res.status(statusCode).send(content)
+
 })
 
 router.get("/", async (req, res) => {
     await studentController.getAllStudents()
-        .then(allStudents => res.json(allStudents))
+        .then(allStudents => res.send(allStudents))
 })
 
 router.post("/", async (req, res) => {
@@ -35,39 +31,22 @@ router.post("/", async (req, res) => {
         return res.status(400).json(e)
     }
 
-    await studentController.signUp(value)
-        .then(createdStudent => res.status(201).json(createdStudent))
-    // .catch(e => {
-    //     if (e instanceof Prisma.PrismaClientKnownRequestError) {
-    //         if (e.code == "P2002") {
-    //             return res.status(400).json({ error: e })
-    //         }
-    //     }
-    // })
+    const { statusCode, content } = await studentController.createStudent(value)
+    return res.status(statusCode).send(content)
 })
 
-router.put("/:studentId", async (req, res) => {
+router.put("/:studentId", authMiddleware, async (req, res) => {
     let value
     try {
         value = await updateStudentValidation.parseAsync(req.body)
     } catch (e) {
         return res.status(400).json(e)
     }
-    await studentController.updateStudent(req.params.studentId, value)
-        .then(updatedStudent => res.json(updatedStudent))
-        .catch(e => {
-            if (e instanceof Prisma.NotFoundError) {
-                return res.status(404).json({ error: e.message })
-            }
-        })
+    const { statusCode, content } = await studentController.updateStudent(req.params.studentId, value, req["userId"])
+    return res.status(statusCode).send(content)
 })
 
-router.delete("/:studentId", async (req, res) => {
-    await studentController.deleteStudent(req.params.studentId)
-        .then(deletedStudent => res.send())
-        .catch(e => {
-            if (e instanceof Prisma.NotFoundError) {
-                return res.json({ error: e.message })
-            }
-        })
+router.delete("/:studentId", authMiddleware, async (req, res) => {
+    const { statusCode, content } = await studentController.deleteStudent(req.params.studentId, req["userId"])
+    return res.status(statusCode).send(content)
 })

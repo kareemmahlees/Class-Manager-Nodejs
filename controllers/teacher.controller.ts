@@ -1,11 +1,13 @@
-import { PrismaClient, Teacher, Prisma } from "@prisma/client";
+import { PrismaClient, Role } from "@prisma/client";
 import bcrypt from "bcrypt"
+import { generateToken } from "../helpers/jwt-config"
 
 
 type Signup = {
     name: string
     email: string
     password: string
+    role: Role
 }
 
 type UpdateTeacher = {
@@ -14,59 +16,97 @@ type UpdateTeacher = {
     password?: string
 }
 
+interface callbackResult {
+    statusCode: number
+    // eslint-disable-next-line
+    content: object | any
+}
 export class TeacherController {
     private readonly returnSchema = {
         id: true,
         name: true,
         email: true,
+        role: true,
         createdAt: true,
         updatedAt: true
     }
 
-    constructor(private readonly prismaTeacher: PrismaClient["teacher"]) { }
+    constructor(private readonly prismaUser: PrismaClient["user"]) { }
 
+    async createTeacher(data: Signup): Promise<callbackResult | (callbackResult & { token: string; })> {
+        const checkExists = await this.prismaUser.findFirst({
+            where: {
+                OR: [{ name: data.name }, { email: data.email }]
+            }
+        })
+        if (checkExists) return { statusCode: 400, content: { error: "User with name or email already exists" } }
+        data.password = await bcrypt.hashSync(data.password, 10)
 
-    async signup(data: Signup) {
-        data.password = await bcrypt.hash(data.password, 10)
-
-        return await this.prismaTeacher.create({
+        const createdTeacher = await this.prismaUser.create({
             data: data, select: this.returnSchema
         })
+        return { statusCode: 201, content: { teacher: createdTeacher, token: generateToken(createdTeacher.id, createdTeacher.role) } }
     }
 
 
-    async getTeachers() {
-        return await this.prismaTeacher.findMany({
+    async getAllTeachers() {
+        return await this.prismaUser.findMany({
             select: this.returnSchema
         })
     }
 
-    async getTeacher(teacherId: string) {
-        return await this.prismaTeacher.findFirstOrThrow({
+    async getOneTeacher(teacherId: string): Promise<callbackResult> {
+        const teacher = await this.prismaUser.findFirst({
             where: {
                 id: teacherId
             },
             select: this.returnSchema
         })
+        if (!teacher) {
+            return { statusCode: 404, content: { error: `Teacher with id ${teacherId} was not found` } }
+        }
+        return { statusCode: 200, content: teacher }
 
     }
 
-    async updateTeacher(teacherId: string, updateData: UpdateTeacher) {
-        return await this.prismaTeacher.update({
+    async updateTeacher(teacherParamId: string, updateData: UpdateTeacher, reqUserId: string): Promise<callbackResult> {
+        const teacher = await this.prismaUser.findFirst({
             where: {
-                id: teacherId
-            },
-            data: updateData,
-            select: this.returnSchema,
-        })
-    }
-
-    async deleteTeacher(teacherId: string) {
-        return await this.prismaTeacher.delete({
-            where: {
-                id: teacherId
+                id: teacherParamId
             }
-        }).catch(e => e.meta.cause)
+        })
+        if (!teacher) {
+            return { statusCode: 404, content: { error: `Teacher with id ${teacherParamId} was not found` } }
+        }
+        if (reqUserId !== teacher.id) {
+            return { statusCode: 401, content: { error: "Unauthorized action" } }
+        }
+        const updatedTeacher = await this.prismaUser.update({
+            where: {
+                id: teacher.id
+            },
+            data: updateData
+        })
+        return { statusCode: 200, content: updatedTeacher }
+    }
+
+    async deleteTeacher(teacherParamId: string, reqUserId: string): Promise<callbackResult> {
+        const teacher = await this.prismaUser.findFirst({
+            where: {
+                id: teacherParamId
+            }
+        })
+        if (!teacher) {
+            return { statusCode: 404, content: { error: `Teacher with id ${teacherParamId} was not found` } }
+        }
+        if (teacherParamId !== reqUserId) return { statusCode: 401, content: { error: "Unauthorized action" } }
+        await this.prismaUser.delete({
+            where: {
+                id: teacherParamId
+            }
+        })
+        return { statusCode: 200, content: "" }
+
     }
 
 }

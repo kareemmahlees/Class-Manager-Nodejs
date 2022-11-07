@@ -10,38 +10,67 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Teacher {
-  id        String   @id @default(uuid())
-  name      String   @unique
-  email     String   @unique
-  password  String   @unique
-  class     Class?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+// model Teacher {
+//   id        String   @id @default(uuid())
+//   name      String   @unique
+//   email     String   @unique
+//   password  String   @unique
+//   class     Class?
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
 
-  @@map("teachers")
-}
+//   @@map("teachers")
+// }
 
-model Student {
-  id        String   @id @default(uuid())
-  name      String   @unique
-  email     String   @unique
-  password  String   @unique
-  class     Class?   @relation(fields: [classId], references: [id])
-  classId   Int?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+// model Student {
+//   id        String   @id @default(uuid())
+//   name      String   @unique
+//   email     String   @unique
+//   password  String   @unique
+//   class     Class?   @relation(fields: [classId], references: [id])
+//   classId   Int?
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
 
-  @@map("students")
+//   @@map("students")
+// }
+
+// model Class {
+//   id        Int       @id @default(autoincrement())
+//   teacher   Teacher   @relation(fields: [teacherId], references: [id])
+//   teacherId String    @unique
+//   students  Student[]
+//   createdAt DateTime  @default(now())
+//   updatedAt DateTime  @updatedAt
+
+//   @@map("classes")
+// }
+
+model User {
+  id              String   @id @default(uuid())
+  name            String
+  email           String   @unique
+  password        String   @unique
+  role            Role     @default(student)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  owned_class     Class?   @relation("OwnerTeacher")
+  owned_class_id  Int?
+  joined_class    Class?   @relation(fields: [joined_class_id], references: [id])
+  joined_class_id Int?
+
+  @@map("users")
 }
 
 model Class {
-  id        Int       @id @default(autoincrement())
-  teacher   Teacher   @relation(fields: [teacherId], references: [id])
-  teacherId String    @unique
-  students  Student[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id        Int    @id @default(autoincrement())
+  name      String
+  teacher   User   @relation("OwnerTeacher", fields: [teacherId], references: [id])
+  teacherId String @unique
+  students  User[]
+}
 
-  @@map("classes")
+enum Role {
+  student
+  teacher
 }

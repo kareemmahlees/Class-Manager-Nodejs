@@ -1,11 +1,11 @@
 import express from "express";
-import { Prisma } from "@prisma/client"
 import { prisma } from "../database";
 import { TeacherController } from "../controllers/teacher.controller"
 import { createTeacherSchema, updateTeacherSchema } from "../validators/teacher.validate"
+import { authMiddleware } from "../helpers/jwt-config"
 
 export const router = express.Router();
-const teacherConroller = new TeacherController(prisma.teacher)
+const teacherConroller = new TeacherController(prisma.user)
 
 router.use(express.json())
 
@@ -13,7 +13,7 @@ router.use(express.json())
  * return all teachers
  */
 router.get("/", async (req, res) => {
-  return res.send(await teacherConroller.getTeachers())
+  return res.send(await teacherConroller.getAllTeachers())
 
 })
 
@@ -22,13 +22,8 @@ router.get("/", async (req, res) => {
  * return one teacher
  */
 router.get("/:teacherId", async (req, res) => {
-  await teacherConroller.getTeacher(req.params.teacherId)
-    .then(requiredTeacher => res.send(requiredTeacher))
-    .catch(e => {
-      if (e instanceof Prisma.NotFoundError) {
-        return res.status(404).json({ error: e.message })
-      }
-    })
+  const { statusCode, content } = await teacherConroller.getOneTeacher(req.params.teacherId)
+  return res.status(statusCode).send(content)
 })
 
 /**
@@ -36,37 +31,35 @@ router.get("/:teacherId", async (req, res) => {
  */
 router.post("/",
   async (req, res) => {
-    let value
+    let fields
     try {
-      value = await createTeacherSchema.parseAsync(req.body)
+      fields = await createTeacherSchema.parseAsync(req.body)
     } catch (e) {
       return res.status(400).json(e)
     }
-    await teacherConroller.signup(value)
-      .then(createdTeacher => res.status(201).json(createdTeacher))
+    const { statusCode, content } = await teacherConroller.createTeacher(fields)
+    return res.status(statusCode).send(content)
   })
 
 
 /**
  * update teacher 
  */
-router.put("/:teacherId", async (req, res) => {
-  let value
+router.put("/:teacherId", authMiddleware, async (req, res) => {
+  let fields
   try {
-    value = await updateTeacherSchema.parseAsync(req.body)
+    fields = await updateTeacherSchema.parseAsync(req.body)
   } catch (e) {
     return res.status(400).json(e)
   }
-  await teacherConroller.updateTeacher(req.params.teacherId, value)
-    .then(updatedTeacher => res.json(updatedTeacher))
-    .catch(e => res.status(500).json({ "error": "something went wrong" }))
-
+  const { statusCode, content } = await teacherConroller.updateTeacher(req.params.teacherId, fields, req["userId"])
+  return res.status(statusCode).send(content)
 })
 
 /**
  * delete teacher
  */
-router.delete('/:teacherId', async (req, res) => {
-  await teacherConroller.deleteTeacher(req.params.teacherId)
-  return res.status(200).send()
+router.delete('/:teacherId', authMiddleware, async (req, res) => {
+  const { statusCode, content } = await teacherConroller.deleteTeacher(req.params.teacherId, req['userId'])
+  return res.status(statusCode).send(content)
 })

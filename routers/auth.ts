@@ -1,26 +1,32 @@
-import session from "express-session"
-import MongoStore from "connect-mongo"
 import express from "express"
-import { passport } from "./passport-config"
+import { loginSchema } from "../validators/auth.validate"
+import { prisma } from "../database"
+import { generateToken } from "../helpers/jwt-config"
 
 export const router = express.Router()
 router.use(express.json())
 
-const sessionStore = new MongoStore({
-    mongoUrl: process.env.MONGODB_URL_CONNECTION as string
+router.post("/login", async (req, res) => {
+    let fields
+    try {
+        const fields = await loginSchema.parseAsync(req.body)
+    } catch (err) {
+        return res.status(400).send(err)
+    }
+    const getUser = await prisma.user.findFirst({
+        where: {
+            email: fields.email,
+            password: fields.password
+        }
+    })
+    if (!getUser) return res.status(400).json({ error: "Invalid email or password" })
+
+    return { token: generateToken(getUser.id, getUser.role) }
+
 })
 
-router.use(session({
-    secret: "my secrete",
-    store: sessionStore,
-    resave: true,
-    saveUninitialized: true,
-}))
-router.use(passport.initialize())
-router.use(passport.session())
 
 
-router.post("/login", passport.authenticate("local", {
-    successRedirect: "/",
-    failureRedirect: "login"
-}))
+
+
+
