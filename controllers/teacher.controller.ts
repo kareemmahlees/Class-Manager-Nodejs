@@ -36,7 +36,7 @@ export class TeacherController {
     async createTeacher(data: Signup): Promise<callbackResult | (callbackResult & { token: string; })> {
         const checkExists = await this.prismaUser.findFirst({
             where: {
-                OR: [{ name: data.name }, { email: data.email }]
+                OR: [{ name: data.name, role: Role.teacher }, { email: data.email, role: Role.teacher }]
             }
         })
         if (checkExists) return { statusCode: 400, content: { error: "User with name or email already exists" } }
@@ -51,14 +51,18 @@ export class TeacherController {
 
     async getAllTeachers() {
         return await this.prismaUser.findMany({
-            select: this.returnSchema
+            where: {
+                role: Role.teacher
+            },
+            select: this.returnSchema,
         })
     }
 
     async getOneTeacher(teacherId: string): Promise<callbackResult> {
         const teacher = await this.prismaUser.findFirst({
             where: {
-                id: teacherId
+                id: teacherId,
+                role: Role.teacher
             },
             select: this.returnSchema
         })
@@ -72,7 +76,8 @@ export class TeacherController {
     async updateTeacher(teacherParamId: string, updateData: UpdateTeacher, reqUserId: string): Promise<callbackResult> {
         const teacher = await this.prismaUser.findFirst({
             where: {
-                id: teacherParamId
+                id: teacherParamId,
+                role: Role.teacher
             }
         })
         if (!teacher) {
@@ -93,7 +98,8 @@ export class TeacherController {
     async deleteTeacher(teacherParamId: string, reqUserId: string): Promise<callbackResult> {
         const teacher = await this.prismaUser.findFirst({
             where: {
-                id: teacherParamId
+                id: teacherParamId,
+                role: Role.teacher
             }
         })
         if (!teacher) {

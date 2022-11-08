@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Role } from "@prisma/client";
 import bcrypt from "bcrypt"
 import { resolve } from "path";
 import { generateToken } from "../helpers/jwt-config"
@@ -37,7 +37,8 @@ export class StudentController {
     async getOneStudent(studentId: string): Promise<callbackResult> {
         const student = await this.prismaStudent.findFirst({
             where: {
-                id: studentId
+                id: studentId,
+                role: Role.student
             },
             select: this.returnSchema,
         })
@@ -46,7 +47,10 @@ export class StudentController {
     }
     async getAllStudents() {
         return await this.prismaStudent.findMany({
-            select: this.returnSchema
+            where: {
+                role: Role.student
+            },
+            select: this.returnSchema,
         })
     }
     async createStudent(data: Signup): Promise<callbackResult | (callbackResult & { token: string; })> {
@@ -66,7 +70,8 @@ export class StudentController {
     async updateStudent(studentParamId: string, updateData: UpdateTeacher, reqUserId: string): Promise<callbackResult> {
         const checkExists = await this.prismaStudent.findFirst({
             where: {
-                id: studentParamId
+                id: studentParamId,
+                role: Role.student
             }
         })
         if (!checkExists) return { statusCode: 400, content: `Student with id ${studentParamId} doesn't exist` }
@@ -83,7 +88,7 @@ export class StudentController {
     async deleteStudent(studentParamId: string, reqUserId: string): Promise<callbackResult> {
         const checkExists = await this.prismaStudent.findFirst({
             where: {
-                id: studentParamId
+                id: studentParamId, role: Role.student
             }
         })
         if (!checkExists) return { statusCode: 404, content: { error: `Student with id ${studentParamId} doesn't exist` } }

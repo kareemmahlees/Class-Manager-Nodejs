@@ -26,6 +26,7 @@ export async function authMiddleware(req: Request, res: Response, next) {
     })
     if (!checkExists) return res.status(400).json({ error: "User data extracted from the token doesn't exist" })
     req["userId"] = checkExists.id
+    req["uesrRole"] = checkExists.role
     next()
 
 

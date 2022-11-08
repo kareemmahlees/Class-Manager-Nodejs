@@ -47,27 +47,30 @@ datasource db {
 // }
 
 model User {
-  id              String   @id @default(uuid())
-  name            String
-  email           String   @unique
-  password        String   @unique
-  role            Role     @default(student)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  owned_class     Class?   @relation("OwnerTeacher")
-  owned_class_id  Int?
-  joined_class    Class?   @relation(fields: [joined_class_id], references: [id])
-  joined_class_id Int?
+  id                String   @id @default(uuid())
+  name              String
+  email             String   @unique
+  password          String   @unique
+  role              Role     @default(student)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  owned_classes     Class[]  @relation("OwnerTeacher")
+  owned_classes_ids Int?
+  joined_class      Class?   @relation(fields: [joined_class_id], references: [id])
+  joined_class_id   Int?
 
   @@map("users")
 }
 
 model Class {
   id        Int    @id @default(autoincrement())
-  name      String
+  name      String @unique
   teacher   User   @relation("OwnerTeacher", fields: [teacherId], references: [id])
-  teacherId String @unique
+  teacherId String
   students  User[]
+
+  @@index([name])
+  @@map("classes")
 }
 
 enum Role {

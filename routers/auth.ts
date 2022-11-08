@@ -9,7 +9,7 @@ router.use(express.json())
 router.post("/login", async (req, res) => {
     let fields
     try {
-        const fields = await loginSchema.parseAsync(req.body)
+        fields = await loginSchema.parseAsync(req.body)
     } catch (err) {
         return res.status(400).send(err)
     }
@@ -21,7 +21,7 @@ router.post("/login", async (req, res) => {
     })
     if (!getUser) return res.status(400).json({ error: "Invalid email or password" })
 
-    return { token: generateToken(getUser.id, getUser.role) }
+    return res.send({ token: generateToken(getUser.id, getUser.role) })
 
 })
 
