@@ -1,0 +1,564 @@
+{
+	"info": {
+		"_postman_id": "fe5191e8-d6cb-4187-bde4-1e963dbee545",
+		"name": "Class Manager",
+		"description": "manage your class with **intuitive** , **secure** and **easy** to use api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21725044"
+	},
+	"item": [
+		{
+			"name": "teachers",
+			"item": [
+				{
+					"name": "create teacher",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"john\",\r\n    \"email\":\"john_adam@gmail.com\",\r\n    \"password\":\"some secure password\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/teachers",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"teachers"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "successful create teacher",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\":\"john\",\r\n    \"email\":\"john_adam@gmail.com\",\r\n    \"password\":\"some secure password\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://127.0.0.1:8000/teachers",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"teachers"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "416"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1a0-l/OhqVHZ1sDxwSXpeUf1t7BsgEA\""
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 08 Nov 2022 19:46:46 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"teacher\": {\n        \"id\": \"efea1c36-b3e3-42fe-b972-f71030b7f78f\",\n        \"name\": \"john\",\n        \"email\": \"john_adam@gmail.com\",\n        \"role\": \"student\",\n        \"createdAt\": \"2022-11-08T19:46:46.887Z\",\n        \"updatedAt\": \"2022-11-08T19:46:46.887Z\"\n    },\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2Njc5NDA0MDYsImlkIjoiZWZlYTFjMzYtYjNlMy00MmZlLWI5NzItZjcxMDMwYjdmNzhmIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE2Njc5MzY4MDZ9.iPIjkWNOb8shUO-PgJ8WRGuo2sFPz3rAg1GLdG9MYpA\"\n}"
+						},
+						{
+							"name": "failed password less than 8",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\":\"john\",\r\n    \"email\":\"john_adam@gmail.com\",\r\n    \"password\":\"123\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://127.0.0.1:8000/teachers",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"teachers"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "172"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"ac-M/F+HWsRWsmdseAGTOELFUkZ98A\""
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 08 Nov 2022 19:49:16 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"issues\": [\n        {\n            \"code\": \"too_small\",\n            \"minimum\": 8,\n            \"type\": \"string\",\n            \"inclusive\": true,\n            \"message\": \"String must contain at least 8 character(s)\",\n            \"path\": [\n                \"password\"\n            ]\n        }\n    ],\n    \"name\": \"ZodError\"\n}"
+						},
+						{
+							"name": "failed invalid email",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\":\"john\",\r\n    \"email\":\"john_adam_ahmed\",\r\n    \"password\":\"some secure password\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://127.0.0.1:8000/teachers",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"teachers"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "120"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"78-Na7sASypGIy11RcXymNc6fYl1co\""
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 08 Nov 2022 19:49:58 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"issues\": [\n        {\n            \"validation\": \"email\",\n            \"code\": \"invalid_string\",\n            \"message\": \"Invalid email\",\n            \"path\": [\n                \"email\"\n            ]\n        }\n    ],\n    \"name\": \"ZodError\"\n}"
+						}
+					]
+				},
+				{
+					"name": "get teachers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/teachers",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"teachers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update teacher",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"kareemkareem\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/teachers/1c5c5bb9-74f4-4c97-bb97-08a6639d8abe",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"teachers",
+								"1c5c5bb9-74f4-4c97-bb97-08a6639d8abe"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete teacher",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/teachers/3b67ff66-e58d-4260-bfbc-e2043cce9e40",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"teachers",
+								"3b67ff66-e58d-4260-bfbc-e2043cce9e40"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get one teacher",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "students",
+			"item": [
+				{
+					"name": "get students",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/students",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"students"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get one student",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/students/:studentId",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"students",
+								":studentId"
+							],
+							"variable": [
+								{
+									"key": "studentId",
+									"value": "ae910d51-1538-4c8a-b5a1-5a26a21ccf58"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create student",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/students",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"students"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update student",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"fofofofofo\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/students/:studentId",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"students",
+								":studentId"
+							],
+							"variable": [
+								{
+									"key": "studentId",
+									"value": "ae910d51-1538-4c8a-b5a1-5a26a21ccf58"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete student",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "authentication",
+			"item": [
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"mohamedahemd@gmail.com\",\r\n    \"password\":\"12345678\",\r\n    \"role\":\"teacher\"\r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/auth/login",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "class",
+			"item": [
+				{
+					"name": "create class",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2Njc5MzQ5NDMsImlkIjoiNTE0NjA4YTktZDdhMy00NzhkLWI3ZjItZDg4NGM1NDRmYTExIiwicm9sZSI6InRlYWNoZXIiLCJpYXQiOjE2Njc5MzEzNDN9.P_YnlGGl4CpehjT1oM08o04ZcK6ZmGvqKopebK4mGrQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/class/create-class/:className",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"class",
+								"create-class",
+								":className"
+							],
+							"variable": [
+								{
+									"key": "className",
+									"value": "foo_class"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "list teachers's classes",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2Njc5MzQ5NDMsImlkIjoiNTE0NjA4YTktZDdhMy00NzhkLWI3ZjItZDg4NGM1NDRmYTExIiwicm9sZSI6InRlYWNoZXIiLCJpYXQiOjE2Njc5MzEzNDN9.P_YnlGGl4CpehjT1oM08o04ZcK6ZmGvqKopebK4mGrQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/class/list-classes",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"class",
+								"list-classes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "enroll student",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2Njc5Mzc0ODMsImlkIjoiNTE0NjA4YTktZDdhMy00NzhkLWI3ZjItZDg4NGM1NDRmYTExIiwicm9sZSI6InRlYWNoZXIiLCJpYXQiOjE2Njc5MzM4ODN9.Ei_r74mEmi_yEkbc2DJlVYeYZPnoIB1_Hg1kQcFxzN4",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/class/enroll-student/:className",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"class",
+								"enroll-student",
+								":className"
+							],
+							"variable": [
+								{
+									"key": "className",
+									"value": "test_class"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "main",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		}
+	]
+}
